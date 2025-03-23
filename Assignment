@@ -1,0 +1,200 @@
+db.books.insertMany([
+  {
+    title: "The White Tiger",
+    author: "Aravind Adiga",
+    price: 1099,
+    category: "Fiction",
+    stock: 50
+  },
+  {
+    title: "The God of Small Things",
+    author: "Arundhati Roy",
+    price: 1299,
+    category: "Literary Fiction",
+    stock: 75
+  },
+  {
+    title: "Midnight's Children",
+    author: "Salman Rushdie",
+    price: 1599,
+    category: "Historical Fiction",
+    stock: 60
+  },
+  {
+    title: "2 States",
+    author: "Chetan Bhagat",
+    price: 999,
+    category: "Romantic Fiction",
+    stock: 85
+  },
+  {
+    title: "The Shiva Trilogy",
+    author: "Amish Tripathi",
+    price: 1899,
+    category: "Fantasy",
+    stock: 95
+  }
+]);
+
+Task 2: Query Documents
+
+1. Retrieve all books where the price is greater than 1000.
+
+   db.books.find({ price: { $gt: 1000 } });
+
+2. Retrieve all books in the "Fiction" category.
+  
+   db.books.find({ category: "Fiction" });
+
+3. Retrieve a single book where the title is "The White Tiger"
+
+   db.books.find({ category: "Fiction" });
+
+4. Retrieve all books where the author is "Chetan Bhagat" and price is greater than 800.  
+
+   db.books.find({ author:"Chetan Bhagat", price: { $gt: 800 } });
+
+
+
+Task 3: Update Documents  
+
+1.Update the price of "2 States" to 1099.
+
+  db.books.update({title:"2 States"},{$set:{price:1099}});
+
+2. Increase the stock by 10 for all books in the "Fiction" category  
+  
+    db.books.updateMany({category:"Fiction"},{$inc:{stock:10}});
+
+ 3. Set the category of "The Shiva Trilogy" to "Epic Fantasy".
+
+   db.books.update({title:"The Shiva Trilogy"},{$set:{category:"Epic Fantasy"}});
+
+4. Add a "classic" tag to the tags array for "The God of Small Things", if the array exists.
+
+  db.books.updateOne(
+    { title: "The God of Small Things", tags: { $exists: true } },
+    { $addToSet: { tags: "classic" } }
+  );
+
+Task 4: Delete Documents
+  1. Delete a book where the title is "The White Tiger".
+     
+    db.books.deleteOne({title:"The White Tiger"});
+     
+    
+  2. Delete all books where the category is "Fiction".
+        
+    db.books.deleteMany({category:"Fiction"});
+
+
+
+
+  Section 2: Query Operators and Arrays
+
+  Task 1: Use Query Operators
+
+  1. Retrieve all books where the price is between 1000 and 1500 (inclusive).
+    
+        db.books.find({ price: { $gte: 1000, $lte: 1500 } });
+
+2. Find all books where the author is either "Chetan Bhagat" or "Salman Rushdie".
+
+        db.books.find({ author: { $in: ["Chetan Bhagat", "Salman Rushdie"] } });
+
+3. Retrieve all books where the price is less than 1200 and category is "Fiction".
+        
+        db.books.find({ price: { $lt: 1200 }, category: "Fiction" });
+
+4. Find all books where the title is not "The Shiva Trilogy".
+       
+        db.books.find({ title: { $ne: "The Shiva Trilogy" } });
+
+
+
+Task 2: Work with Arrays
+1. Retrieve all books where the tags array contains "fiction" (use $elemMatch).
+
+ db.books.find({ tags: { $elemMatch: { $eq: "fiction" } } });
+
+2. Find all books where the tags array has exactly 3 elements.
+
+ db.books.find({ tags: { $size: 3 } });
+
+3. Add the tag "bestseller" to the tags array of "The God of Small Things", only if it does not already exist (use $addToSet).
+
+   db.books.updateOne(
+    { title: "The God of Small Things" },
+    { $addToSet: { tags: "bestseller" } }
+  );
+
+4. Remove the "bestseller" tag from the tags array of "The White Tiger" (use $pull).
+
+    db.books.updateOne(
+     { title: "The White Tiger" },
+     { $pull: { tags: "bestseller" } }
+      );
+
+
+Task 3: Use $exists and $size
+1. Find all books where the tags field exists.
+
+   db.books.find({ tags: { $exists: true } });
+
+2. Retrieve all books where the tags array contains exactly 2 elements.
+
+   db.books.find({ tags: { $size: 2 } });
+
+
+Section 3: Advanced Update Operations
+
+
+   Task 1: Using $set, $inc, $push, $unset
+
+   1. Set the price of "The Shiva Trilogy" to 1999 using the $set operator.
+
+    db.books.updateOne({ title: "The Shiva Trilogy" }, { $set: { price: 1999 } });
+
+   2. Increase the stock of "Midnight's Children" by 10 using the $inc operator.
+
+    db.books.updateOne({ title: "Midnight's Children" }, { $inc: { stock: 10 } });
+
+   3. Add a new element "new release" to the tags array of "The God of Small Things" using the $push operator.
+   
+    db.books.updateOne({ title: "The God of Small Things" }, { $push: { tags: "new release" } });
+
+   4. Remove the tags field from "The White Tiger" using the $unset operator.
+   
+    db.books.updateOne({ title: "The White Tiger" }, { $unset: { tags: "" } });
+
+   Task 2: Using $addToSet and $pull
+   1. Add "fiction" to the tags array of "2 States", only if it does not already exist (use $addToSet).
+   
+    db.books.updateOne({ title: "2 States" }, { $addToSet: { tags: "fiction" } });
+
+   2. Remove "romantic" from the tags array of "2 States" (use $pull).
+    
+     db.books.updateOne({ title: "2 States" }, { $pull: { tags: "romantic" } });
+
+
+
+     Section 4: Delete Operations and Cleanup
+     Task 1: Use deleteOne and deleteMany
+     
+     1. Delete a single document where the category is "Fantasy" (use deleteOne).
+
+        db.books.deleteOne({ category: "Fantasy" });
+
+     2. Delete all books where the price is less than 1000 (use deleteMany).
+
+        db.books.deleteMany({ price: { $lt: 1000 } });
+     
+     Task 2: Cleanup the Collection
+     
+     1. After performing the deletion tasks, ensure that the books collection only contains books where the price is greater than or equal to 1000.
+        
+        db.books.deleteMany({ price: { $lt: 1000 } });
+     
+     2. Delete any remaining documents in the books collection.
+        
+        db.books.deleteMany({});
